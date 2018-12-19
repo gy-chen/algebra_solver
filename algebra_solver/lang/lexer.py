@@ -34,7 +34,7 @@ CHAR_TO_TYPES = {
     '*': TokenType.MULTIPLE,
     '/': TokenType.DIVIDE,
     '(': TokenType.L_PAREN,
-    ')': TokenType.R_PARAN,
+    ')': TokenType.R_PAREN,
     '=': TokenType.EQUATION
 }
 
