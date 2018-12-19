@@ -51,7 +51,11 @@ class UnknownTokenError(Exception):
 
 def tokenize(text):
     gen = enumerate(text)
-    for p, c in gen:
+    while True:
+        try:
+            p, c = next(gen)
+        except StopIteration:
+            return
         if c.isspace():
             continue
         if c in CHAR_TO_TYPES:
