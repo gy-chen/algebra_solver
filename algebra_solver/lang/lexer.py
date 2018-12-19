@@ -45,7 +45,7 @@ Token = namedtuple('Token', 'type value position')
 class UnknownTokenError(Exception):
 
     def __init__(self, position, message=None):
-        super(message)
+        super().__init__(self, message)
         self.position = position
 
 
