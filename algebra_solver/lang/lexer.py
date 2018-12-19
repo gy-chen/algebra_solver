@@ -76,7 +76,7 @@ def _read_number(c, p, gen):
         if c == '.':
             expected.remove('.')
         try:
-            c, p = next(gen)
+            p, c = next(gen)
         except StopIteration:
             break
     else:
@@ -92,7 +92,7 @@ def _read_identifier(c, p, gen):
     while c in expected:
         value.write(c)
         try:
-            c, p = next(gen)
+            p, c = next(gen)
         except StopIteration:
             break
     else:
