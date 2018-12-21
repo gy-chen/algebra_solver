@@ -32,13 +32,13 @@ def test_parse_expression():
 
 
 def test_incomplete_equation():
-    with pytest.raises(parser.UnexceptEndException):
+    with pytest.raises(parser.UnexpectEndException):
         parser.parse(lexer.tokenize('x + 3'))
 
-    with pytest.raises(parser.UnexceptEndException):
+    with pytest.raises(parser.UnexpectEndException):
         parser.parse(lexer.tokenize(''))
     
-    with pytest.raises(parser.UnexceptEndException):
+    with pytest.raises(parser.UnexpectEndException):
         parser.parse(lexer.tokenize('x * ( 3 + 2'))
 
 

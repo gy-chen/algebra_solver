@@ -34,7 +34,7 @@ class ParseException(Exception):
     pass
 
 
-class UnexceptEndException(ParseException):
+class UnexpectEndException(ParseException):
     pass
 
 
@@ -93,7 +93,7 @@ def _parse_equation_expression(tokens_gen):
         if token.type != lexer.TokenType.EQUATION:
             raise UnexpectTokenException(token)
     except StopIteration:
-        raise UnexceptEndException()
+        raise UnexpectEndException()
     right, tokens_gen = _parse_expression(tokens_gen)
     return EquationExpression(left, right)
 
@@ -128,7 +128,7 @@ def _parse_operand(tokens_gen):
     try:
         token = next(tokens_gen)
     except StopIteration:
-        raise UnexceptEndException()
+        raise UnexpectEndException()
     if token.type == lexer.TokenType.NUMBER:
         return NumberExpression(token.value)
     elif token.type == lexer.TokenType.IDENTIFIER:
@@ -145,7 +145,7 @@ def _parse_paren_expression(token_gens):
     try:
         token = next(token_gens)
     except StopIteration:
-        raise UnexceptEndException()
+        raise UnexpectEndException()
     if token.type != lexer.TokenType.R_PAREN:
         raise UnexpectTokenException(token)
     return exp
