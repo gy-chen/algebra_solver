@@ -35,6 +35,12 @@ def test_incomplete_equation():
     with pytest.raises(parser.UnexceptEndException):
         parser.parse(lexer.tokenize('x + 3'))
 
+    with pytest.raises(parser.UnexceptEndException):
+        parser.parse(lexer.tokenize(''))
+    
+    with pytest.raises(parser.UnexceptEndException):
+        parser.parse(lexer.tokenize('x * ( 3 + 2'))
+
 
 def test_surplus_equation():
     with pytest.raises(parser.UnexpectTokenException):
@@ -56,6 +62,18 @@ def test_inorder_equation():
 
     with pytest.raises(parser.UnexpectTokenException):
         parser.parse(lexer.tokenize('x + 3 3 = 10 10'))
+
+    with pytest.raises(parser.UnexpectTokenException):
+        parser.parse(lexer.tokenize('x * (( 3 + 2 ) = 10'))
+
+    with pytest.raises(parser.UnexpectTokenException):
+        parser.parse(lexer.tokenize('x * ( 3 + 2 )) = 10'))
+
+    with pytest.raises(parser.UnexpectTokenException):
+        parser.parse(lexer.tokenize('x * ( 3 + 2  = 10'))
+
+    with pytest.raises(parser.UnexpectTokenException):
+        parser.parse(lexer.tokenize('x * 3 + 2 ) = 10'))
 
 
 def test_precedence():
