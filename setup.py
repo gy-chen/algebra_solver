@@ -11,7 +11,9 @@ with open('algebra_solver/__init__.py', 'r') as f:
         version = '0.0.1'
 
 
-REQUIRES = []
+REQUIRES = [
+    'tensorflow'
+]
 
 setup(
     name='algebra_solver',
