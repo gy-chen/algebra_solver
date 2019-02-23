@@ -12,7 +12,10 @@ with open('algebra_solver/__init__.py', 'r') as f:
 
 
 REQUIRES = [
-    'tensorflow'
+    'tensorflow',
+    'flask',
+    'celery',
+    'redis'
 ]
 
 setup(
