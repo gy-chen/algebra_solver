@@ -35,6 +35,11 @@ def test_storage(storage):
     assert stored_task.result == task.result
 
 
+def test_get_empty_task(storage):
+    task = storage.get_task(404)
+    assert task is None
+
+
 def test_storage_pubsub(storage):
     task = Task(
         id_=None,

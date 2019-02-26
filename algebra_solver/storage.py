@@ -66,13 +66,15 @@ class TaskStorage:
         self._redis = redis
 
     def get_task(self, id_):
-        # TODO what happned when provided wrong id?
+        task_state = self._retrive_state(id_)
+        if task_state is None:
+            return None
         variables = self._retrive_variables(id_)
         result = {variable: self._retrive_result(id_, variable)
                   for variable in variables}
         task = Task(
             id_=id_,
-            state=self._retrive_state(id_),
+            state=task_state,
             content=self._retrive_content(id_),
             result=result
         )
@@ -104,7 +106,10 @@ class TaskStorage:
 
     def _retrive_state(self, id_):
         state_text = self._redis.hget(
-            self.KEY_HASH.format(id_=id_), self.HASH_KEY_STATE).decode()
+            self.KEY_HASH.format(id_=id_), self.HASH_KEY_STATE)
+        if state_text is None:
+            return None
+        state_text = state_text.decode()
         return TaskState(state_text)
 
     def _retrive_content(self, id_):
