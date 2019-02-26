@@ -60,10 +60,13 @@ class TaskStorage:
     KEY_VARIABLES = 'task:{id_}:variables'
     KEY_RESULT = 'task:{id_}:result'
 
+    CHANNEL_CHANGE = 'task:change'
+
     def __init__(self, redis):
         self._redis = redis
 
     def get_task(self, id_):
+        # TODO what happned when provided wrong id?
         variables = self._retrive_variables(id_)
         result = {variable: self._retrive_result(id_, variable)
                   for variable in variables}
@@ -83,6 +86,18 @@ class TaskStorage:
         self._put_variables(task.id_, task.result.keys())
         for variable, result in task.result.items():
             self._put_result(task.id_, variable, result)
+        self._redis.publish(self.CHANNEL_CHANGE, task.id_)
+
+    def subscribe_task_change(self, id_, timeout=60.):
+        p = self._redis.pubsub()
+        p.subscribe(self.CHANNEL_CHANGE)
+        try:
+            while True:
+                message = p.get_message(timeout=timeout)
+                if message and message['data'].decode() == id_:
+                    return self.get_task(id_)
+        finally:
+            p.unsubscribe()
 
     def _generate_id(self):
         return self._redis.incr(self.KEY_GLOBAL_TASK)
