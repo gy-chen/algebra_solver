@@ -99,7 +99,7 @@ class TaskStorage:
                 if message and message['data'].decode() == id_:
                     return self.get_task(id_)
         finally:
-            p.unsubscribe()
+            p.close()
 
     def _generate_id(self):
         return self._redis.incr(self.KEY_GLOBAL_TASK)
