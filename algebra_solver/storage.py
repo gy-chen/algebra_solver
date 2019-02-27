@@ -1,6 +1,13 @@
 """Redis storage for store task data"""
 import enum
+import uuid
+from functools import singledispatch
 from collections import namedtuple
+from algebra_solver.lang.lexer import tokenize
+from algebra_solver.lang.parser import parse
+from algebra_solver.lang.parser import EquationExpression
+from algebra_solver.lang.parser import IdentifierExpression
+from algebra_solver.lang.parser import InfixExpression
 
 
 class Task:
@@ -53,7 +60,6 @@ class TaskState(enum.Enum):
 
 class TaskStorage:
 
-    KEY_GLOBAL_TASK = 'global:task'
     KEY_HASH = 'task:{id_}'
     HASH_KEY_STATE = 'state'
     HASH_KEY_CONTENT = 'content'
@@ -64,6 +70,22 @@ class TaskStorage:
 
     def __init__(self, redis):
         self._redis = redis
+
+    def new_task(self, content):
+        """create a new task with default attributes
+
+        raise: UnkownTokenException, ParseException
+        """
+        task = Task()
+        equation_expression = parse(tokenize(content))
+        variables = collect_variables(equation_expression)
+        task.content = content
+        task.state = TaskState.INITIAL
+        task.result = {
+            v: None
+            for v in variables
+        }
+        return task
 
     def get_task(self, id_):
         task_state = self._retrive_state(id_)
@@ -102,7 +124,7 @@ class TaskStorage:
             p.close()
 
     def _generate_id(self):
-        return self._redis.incr(self.KEY_GLOBAL_TASK)
+        return str(uuid.uuid4())
 
     def _retrive_state(self, id_):
         state_text = self._redis.hget(
@@ -119,7 +141,8 @@ class TaskStorage:
         return [v.decode() for v in self._redis.smembers(self.KEY_VARIABLES.format(id_=id_))]
 
     def _retrive_result(self, id_, variable):
-        return float(self._redis.hget(self.KEY_RESULT.format(id_=id_), variable))
+        result = self._redis.hget(self.KEY_RESULT.format(id_=id_), variable)
+        return result if result is None else float(result)
 
     def _put_state(self, id_, state):
         self._redis.hset(self.KEY_HASH.format(
@@ -135,4 +158,34 @@ class TaskStorage:
         self._redis.sadd(self.KEY_VARIABLES.format(id_=id_), *variables)
 
     def _put_result(self, id_, variable, result):
+        if result is None:
+            return
         self._redis.hset(self.KEY_RESULT.format(id_=id_), variable, result)
+
+
+def collect_variables(expression):
+    context = set()
+    _collect_variables(expression, context)
+    return context
+
+
+@singledispatch
+def _collect_variables(expression, context):
+    return
+
+
+@_collect_variables.register(EquationExpression)
+def _(expression, context):
+    _collect_variables(expression.left, context)
+    _collect_variables(expression.right, context)
+
+
+@_collect_variables.register(IdentifierExpression)
+def _(expression, context):
+    context.add(expression.identifier)
+
+
+@_collect_variables.register(InfixExpression)
+def _(expression, context):
+    _collect_variables(expression.left, context)
+    _collect_variables(expression.right, context)
