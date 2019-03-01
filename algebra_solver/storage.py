@@ -160,7 +160,7 @@ class TaskStorage:
     def _put_result(self, id_, variable, result):
         if result is None:
             return
-        self._redis.hset(self.KEY_RESULT.format(id_=id_), variable, result)
+        self._redis.hset(self.KEY_RESULT.format(id_=id_), variable, float(result))
 
 
 def collect_variables(expression):

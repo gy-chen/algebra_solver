@@ -14,7 +14,7 @@ def create_app(config=None):
     redis.init_app(app)
     task_storage.init_app(app, redis)
     celery.init_app(app)
-    background_task.init_app(app, celery)
+    background_task.init_app(app, celery, task_storage)
     app.register_blueprint(task_api, url_prefix='/task')
 
     return app
