@@ -1,5 +1,6 @@
 import pytest
 import time
+import asyncio
 import concurrent.futures
 from redis import Redis
 from algebra_solver.storage import TaskStorage, Task, TaskState
@@ -50,17 +51,42 @@ def test_storage_pubsub(storage):
 
     storage.put_task(task)
 
-    def change_task_status_later():
-        time.sleep(2)
+    async def change_task_status_later():
+        await asyncio.sleep(5)
         task.state = TaskState.DONE
         task.result['x'] = -1
         storage.put_task(task)
 
-    def check_task_status_later(id_):
-        task = storage.subscribe_task_change(id_)
-        assert task.state == TaskState.Done
+    async def check_task_status_later(id_):
+        task = await asyncio.wait_for(storage.subscribe_task_change(id_), timeout=10)
+        assert task.state == TaskState.DONE
         assert task.result['x'] == -1
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        executor.submit(change_task_status_later)
-        executor.submit(check_task_status_later, task.id_)
+    async def main():
+        await asyncio.gather(
+            check_task_status_later(task.id_),
+            change_task_status_later()
+        )
+
+    asyncio.run(main())
+
+
+def test_storage_pubsub_timeout(storage):
+    task = Task(
+        id_=None,
+        state=TaskState.SOLVING,
+        content='x + 1 = 0',
+        result={'x': 0}
+    )
+
+    storage.put_task(task)
+
+    async def check_task_status_later(id_):
+        try:
+            task = await asyncio.wait_for(storage.subscribe_task_change(id_), timeout=10)
+        except asyncio.TimeoutError:
+            assert True
+        else:
+            assert False
+
+    asyncio.run(check_task_status_later(task.id_))

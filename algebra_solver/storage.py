@@ -1,6 +1,7 @@
 """Redis storage for store task data"""
 import enum
 import uuid
+import asyncio
 from functools import singledispatch
 from collections import namedtuple
 from algebra_solver.lang.lexer import tokenize
@@ -112,13 +113,14 @@ class TaskStorage:
             self._put_result(task.id_, variable, result)
         self._redis.publish(self.CHANNEL_CHANGE, task.id_)
 
-    def subscribe_task_change(self, id_, timeout=60.):
+    async def subscribe_task_change(self, id_):
         p = self._redis.pubsub()
         p.subscribe(self.CHANNEL_CHANGE)
         try:
             while True:
-                message = p.get_message(timeout=timeout)
-                if message and message['data'].decode() == id_:
+                await asyncio.sleep(0.1)
+                message = p.get_message()
+                if message and message['type'] == 'message' and message['data'].decode() == id_:
                     return self.get_task(id_)
         finally:
             p.close()
@@ -160,7 +162,8 @@ class TaskStorage:
     def _put_result(self, id_, variable, result):
         if result is None:
             return
-        self._redis.hset(self.KEY_RESULT.format(id_=id_), variable, float(result))
+        self._redis.hset(self.KEY_RESULT.format(
+            id_=id_), variable, float(result))
 
 
 def collect_variables(expression):
