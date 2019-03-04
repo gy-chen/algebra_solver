@@ -41,11 +41,6 @@ def test_celery(app):
     assert celery_app is not None
 
 
-def test_background_task(app):
-    bt = background_task.background_task
-    assert bt is not None
-
-
 def test_task_api_create_task(client):
     res = client.post('/task/', data={'content': 'x - 1 = 0'})
     task_dict = json.loads(res.data.decode())['task']

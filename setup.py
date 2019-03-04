@@ -15,7 +15,9 @@ REQUIRES = [
     'tensorflow',
     'flask',
     'celery',
-    'redis'
+    'redis',
+    'gevent',
+    'gevent-websocket'
 ]
 
 setup(
