@@ -29,12 +29,7 @@ def get_task(id_):
             'result': task.result
         }
     else:
-        task_dict = {
-            'id': None,
-            'state': None,
-            'content': None,
-            'result': None
-        }
+        task_dict = None
     # TODO add status
     return jsonify(task=task_dict)
 

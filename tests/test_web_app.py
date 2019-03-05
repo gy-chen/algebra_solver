@@ -74,3 +74,11 @@ def test_task_api_get_task(client):
     assert retrieved_task['id'] == original_task.id_
     assert retrieved_task['content'] == original_task.content
     assert retrieved_task['result'] == original_task.result
+
+
+def test_task_api_get_task_empty(client):
+    nonexist_task_id = 4413
+    res = client.get('/task/{}'.format(nonexist_task_id))
+    assert res.status_code == 200
+    retrieved_task = json.loads(res.data.decode())['task']
+    assert retrieved_task is None
