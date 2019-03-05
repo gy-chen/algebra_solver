@@ -17,7 +17,9 @@ REQUIRES = [
     'celery',
     'redis',
     'gevent',
-    'gevent-websocket'
+    'gevent-websocket',
+    # TODO this is testing related package, find a place to put testing packages
+    'websockets'
 ]
 
 setup(

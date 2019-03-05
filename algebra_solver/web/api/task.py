@@ -63,7 +63,7 @@ def create_task():
     return jsonify(task=task_dict)
 
 
-@task.route('/polling/{id_}')
+@task.route('/polling/<id_>')
 def polling_task(id_):
     """Polling task changes until reach final state
 
@@ -79,19 +79,25 @@ def polling_task(id_):
         abort(400, "Expected WebSocket request")
 
     task = task_storage.storage.get_task(id_)
+    _send_task(ws, task)
     while task and task.state != TaskState.DONE and task.state != TaskState.ERROR:
         task_coroute = task_storage.storage.subscribe_task_change(id_)
         # TODO read timeout setting
-        task_coroute = asyncio.wait_for(task_coroute, 10)
+        task_coroute = asyncio.wait_for(task_coroute, 5)
         try:
             task = asyncio.get_event_loop().run_until_complete(task_coroute)
         except asyncio.TimeoutError:
             task = task_storage.storage.get_task(id_)
         if task:
-            task_dict = {
-                'id': task.id_,
-                'content': task.content,
-                'state': task.state.value,
-                'result': task.result
-            }
-            ws.send(json.dumps(task_dict))
+            _send_task(ws, task)
+    return ('', 204)
+
+
+def _send_task(ws, task):
+    task_dict = {
+        'id': task.id_,
+        'content': task.content,
+        'state': task.state.value,
+        'result': task.result
+    }
+    ws.send(json.dumps(task_dict))
