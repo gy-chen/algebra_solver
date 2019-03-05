@@ -4,11 +4,12 @@ import asyncio
 import concurrent.futures
 from redis import Redis
 from algebra_solver.storage import TaskStorage, Task, TaskState
+from algebra_solver.web.config import TestConfig
 
 
 @pytest.fixture
 def redis():
-    return Redis(host='127.0.0.1', port=6379)
+    return Redis(host=TestConfig.REDIS_HOST, port=TestConfig.REDIS_PORT)
 
 
 @pytest.fixture

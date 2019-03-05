@@ -7,7 +7,7 @@ from algebra_solver.web.extension import redis, task_storage, celery, background
 def create_app(config=None):
     app = Flask(__name__)
     if config is None:
-        app.config.from_object('algebra_solver.web.config')
+        app.config.from_object('algebra_solver.web.config.BaseConfig')
     else:
         app.config.from_object(config)
 

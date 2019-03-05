@@ -18,6 +18,7 @@ REQUIRES = [
     'redis',
     'gevent',
     'gevent-websocket',
+    'python-dotenv',
     # TODO this is testing related package, find a place to put testing packages
     'websockets'
 ]
