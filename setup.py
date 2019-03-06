@@ -35,4 +35,9 @@ setup(
     tests_require=['coverage', 'pytest'],
 
     packages=find_packages(),
+    entry_points={
+        'console_scripts': [
+            'algebra-solver-dev-server=algebra_solver.bin.flask_dev_server:server.serve_forever',
+        ]
+    }
 )
