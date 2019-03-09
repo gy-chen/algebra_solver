@@ -1,5 +1,5 @@
-import { ofType, ActionsObservable } from 'redux-observable';
-import { Observable, Observer, } from 'rxjs';
+import { ofType, ActionsObservable, combineEpics } from 'redux-observable';
+import { Observable, Observer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { PollTaskAction, SubmitTaskAction, SUBMIT_TASK, POLL_TASK, UpdateTaskAction } from './types';
 
@@ -30,4 +30,9 @@ export const pollTaskEpic = (action$: ActionsObservable<PollTaskAction>) => acti
             }
         );
     })
+);
+
+export const taskEpic = combineEpics(
+    submitTaskEpic,
+    pollTaskEpic
 );
