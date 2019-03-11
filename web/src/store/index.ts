@@ -3,9 +3,14 @@ import { createEpicMiddleware, combineEpics } from 'redux-observable';
 import { taskReducer } from './task/reducers';
 import { taskEpic } from './task/epics';
 import { RootState } from './types';
+import * as taskApi from '../api/task';
 
 export const configureStore = (preloadedState?: RootState) => {
-    const epicMiddleware = createEpicMiddleware();
+    const epicMiddleware = createEpicMiddleware({
+        dependencies: {
+            taskApi
+        }
+    });
 
     const middlewares = [epicMiddleware, ...getDefaultMiddleware()];
 

@@ -1,4 +1,5 @@
 import { History } from 'history';
+import * as apiTask from '../../api/task';
 
 export const SUBMIT_TASK = 'SUBMIT_TASK';
 export const POLL_TASK = 'POLL_TASK';
@@ -38,4 +39,8 @@ export interface Task {
 export interface TaskResult {
     [key: string]: number | undefined | null,
     _loss?: number
+};
+
+export interface TaskEpicDependencies {
+    taskApi: typeof apiTask
 };
