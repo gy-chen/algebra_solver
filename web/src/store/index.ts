@@ -4,7 +4,7 @@ import { taskReducer } from './task/reducers';
 import { taskEpic } from './task/epics';
 import { RootState } from './types';
 
-export const configureStore = (preloadedState: RootState) => {
+export const configureStore = (preloadedState?: RootState) => {
     const epicMiddleware = createEpicMiddleware();
 
     const middlewares = [epicMiddleware, ...getDefaultMiddleware()];

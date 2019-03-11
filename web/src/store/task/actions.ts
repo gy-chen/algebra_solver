@@ -1,3 +1,4 @@
+import { History } from 'history';
 import {
     SUBMIT_TASK,
     POLL_TASK,
@@ -8,11 +9,12 @@ import {
     Task
 } from './types';
 
-export const submitTask = (content: string): SubmitTaskAction => {
+export const submitTask = (content: string, history: History): SubmitTaskAction => {
     return {
         type: SUBMIT_TASK,
         payload: {
-            content
+            content,
+            history
         }
     };
 };

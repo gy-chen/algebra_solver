@@ -1,3 +1,5 @@
+import { History } from 'history';
+
 export const SUBMIT_TASK = 'SUBMIT_TASK';
 export const POLL_TASK = 'POLL_TASK';
 export const UPDATE_TASK = 'UPDATE_TASK';
@@ -9,7 +11,8 @@ export interface TaskState {
 export interface SubmitTaskAction {
     type: typeof SUBMIT_TASK,
     payload: {
-        content: string
+        content: string,
+        history: History
     }
 };
 
@@ -27,11 +30,12 @@ export interface UpdateTaskAction {
 
 export interface Task {
     id: string,
+    state: string,
     content: string,
     result: TaskResult
 };
 
 export interface TaskResult {
-    [key: string]: number,
-    _loss: number
+    [key: string]: number | undefined | null,
+    _loss?: number
 };
