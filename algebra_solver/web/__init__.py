@@ -1,5 +1,6 @@
 """Provide flask application for serving API"""
 from flask import Flask
+from flask_cors import CORS
 from algebra_solver.web.api.task import task as task_api
 from algebra_solver.web.extension import redis, task_storage, celery, background_task
 
@@ -11,6 +12,7 @@ def create_app(config=None):
     else:
         app.config.from_object(config)
 
+    CORS(app)
     redis.init_app(app)
     task_storage.init_app(app, redis)
     celery.init_app(app)
