@@ -17,9 +17,9 @@ it('createTask', done => {
 it('pollTask', async done => {
     const expectContent = 'x - 1 = 0';
     const res = await taskApi.createTask(expectContent);
-    const taskId = res.data.id;
+    const taskId = res.data.task.id;
 
-    taskApi.pollTask(taskId.id)
+    taskApi.pollTask(taskId)
         .subscribe(task => {
             expect(task.id).toBeDefined();
             expect(task.state).toBeDefined();

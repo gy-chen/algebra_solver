@@ -7,9 +7,9 @@ const client = axios.create({
 });
 
 export const createTask = (content: string) => {
-    return client.post('/task', {
-        content
-    });
+    const data = new URLSearchParams();
+    data.append('content', content);
+    return client.post('/task/', data);
 };
 
 export const pollTask = (id: string): Observable<Task> => {
