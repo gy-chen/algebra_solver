@@ -1,5 +1,4 @@
 import { ActionsObservable } from 'redux-observable';
-import { take } from 'rxjs/operators';
 import { TestScheduler } from 'rxjs/testing';
 import { createMemoryHistory } from 'history';
 import { submitTaskEpic } from './epics';
@@ -44,7 +43,7 @@ it('submitTaskEpic', (done) => {
         const expectActions = [
             pollTask('4413')
         ]
-        
+
         output$.subscribe(action => {
             expect(expectActions.shift()).toEqual(action);
             if (expectActions.length === 0) {
