@@ -44,12 +44,14 @@ it('submitTaskEpic', (done) => {
             pollTask('4413')
         ]
 
-        output$.subscribe(action => {
-            expect(expectActions.shift()).toEqual(action);
-            if (expectActions.length === 0) {
-                expect(mockHistory.location.pathname).toEqual('/task/4413');
-                done();
+        output$.subscribe(
+            action => {
+                expect(action).toEqual(expectActions.shift());
+                if (expectActions.length === 0) {
+                    expect(mockHistory.location.pathname).toEqual('/task/4413');
+                    done();
+                }
             }
-        });
+        );
     });
 });
