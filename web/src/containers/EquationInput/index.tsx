@@ -14,6 +14,12 @@ interface EquationInputContainerProps {
     state: EquationInputState
 }
 
+const mapStateToProps = (state: RootState) => {
+    return {
+        state: state.task.submitting ? EquationInputState.SUBMITTING : EquationInputState.NORMAL
+    };
+};
+
 const EuqationInputContainer = ({ history, dispatch, ...props }: EquationInputContainerProps) => {
 
     const onSubmit = (content: string) => {
@@ -26,4 +32,4 @@ const EuqationInputContainer = ({ history, dispatch, ...props }: EquationInputCo
     />;
 }
 
-export default withRouter(connect(null, null)(EuqationInputContainer));
+export default withRouter(connect(mapStateToProps, null)(EuqationInputContainer));
