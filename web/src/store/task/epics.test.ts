@@ -6,11 +6,18 @@ import * as taskApi from '../../api/task';
 import { submitTask, pollTask } from './actions';
 
 it('submitTaskEpic', (done) => {
-    const testScheduler = new TestScheduler(() => { });
+    const mockHistory = createMemoryHistory();
+
+    const testScheduler = new TestScheduler((actual, expected) => {
+        // XXX setTimeout so the epic output can be collected, maybe has a better way
+        setTimeout(() => {
+            expect(actual).toEqual(expected);
+            expect(mockHistory.location.pathname).toEqual('/task/4413');
+            done();
+        }, 10);
+    });
 
     testScheduler.run(({ hot, expectObservable }) => {
-
-        const mockHistory = createMemoryHistory();
 
         const mockTaskApi: typeof taskApi = {
             createTask: jest.fn(() => Promise.resolve({
@@ -40,18 +47,8 @@ it('submitTaskEpic', (done) => {
 
         const output$ = submitTaskEpic(action$, state$, dependencies);
 
-        const expectActions = [
-            pollTask('4413')
-        ]
-
-        output$.subscribe(
-            action => {
-                expect(action).toEqual(expectActions.shift());
-                if (expectActions.length === 0) {
-                    expect(mockHistory.location.pathname).toEqual('/task/4413');
-                    done();
-                }
-            }
-        );
+        expectObservable(output$).toBe('-a', {
+            a: pollTask('4413')
+        });
     });
 });
