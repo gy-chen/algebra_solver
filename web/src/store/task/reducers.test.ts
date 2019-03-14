@@ -1,8 +1,11 @@
+import { createMemoryHistory } from 'history';
 import { taskReducer } from './reducers';
-import { TaskState, UPDATE_TASK, UpdateTaskAction, Task } from './types';
+import { TaskState, Task } from './types';
+import { submitTask, submittedTask, updateTask } from './actions';
 
 it('updateTask', () => {
     const initialState: TaskState = {
+        submitting: false,
         currentTask: {
             id: '4413',
             content: 'x - 1 = 0',
@@ -13,7 +16,7 @@ it('updateTask', () => {
         }
     };
 
-    const updateTask: Task = {
+    const taskForUpdate: Task = {
         id: '4413',
         content: 'x - 1 = 0',
         state: 'DONE',
@@ -23,14 +26,32 @@ it('updateTask', () => {
         }
     };
 
-    const updateTaskAction: UpdateTaskAction = {
-        type: UPDATE_TASK,
-        payload: updateTask
-    };
-
+    const updateTaskAction = updateTask(taskForUpdate);
     const stateAfterUpdate = taskReducer(initialState, updateTaskAction);
 
-    expect(stateAfterUpdate).toEqual({
-        currentTask: updateTask
-    });
+    expect(stateAfterUpdate.currentTask).toEqual(taskForUpdate);
+});
+
+it('submitTask', () => {
+    const initialState: TaskState = {
+        submitting: false,
+        currentTask: null
+    };
+
+    const mockHistory = createMemoryHistory();
+
+    const stateAfterUpdate = taskReducer(initialState, submitTask('x - 1 = 0', mockHistory));
+
+    expect(stateAfterUpdate.submitting).toEqual(true);
+});
+
+it('submittedTask', () => {
+    const initialState: TaskState = {
+        submitting: true,
+        currentTask: null
+    };
+
+    const stateAfterUpdate = taskReducer(initialState, submittedTask());
+
+    expect(stateAfterUpdate.submitting).toEqual(false);
 });

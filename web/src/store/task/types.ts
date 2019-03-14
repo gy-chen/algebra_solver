@@ -2,10 +2,12 @@ import { History } from 'history';
 import * as apiTask from '../../api/task';
 
 export const SUBMIT_TASK = 'SUBMIT_TASK';
+export const SUBMITTED_TASK = 'SUBMITTED_TASK';
 export const POLL_TASK = 'POLL_TASK';
 export const UPDATE_TASK = 'UPDATE_TASK';
 
 export interface TaskState {
+    submitting: boolean,
     currentTask: Task | null
 };
 
@@ -15,6 +17,10 @@ export interface SubmitTaskAction {
         content: string,
         history: History
     }
+};
+
+export interface SubmittedTaskAction {
+    type: typeof SUBMITTED_TASK
 };
 
 export interface PollTaskAction {

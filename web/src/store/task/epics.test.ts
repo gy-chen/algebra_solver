@@ -3,7 +3,7 @@ import { TestScheduler } from 'rxjs/testing';
 import { createMemoryHistory } from 'history';
 import { submitTaskEpic } from './epics';
 import * as taskApi from '../../api/task';
-import { submitTask, pollTask } from './actions';
+import { submitTask, pollTask, submittedTask } from './actions';
 
 it('submitTaskEpic', (done) => {
     const mockHistory = createMemoryHistory();
@@ -47,8 +47,9 @@ it('submitTaskEpic', (done) => {
 
         const output$ = submitTaskEpic(action$, state$, dependencies);
 
-        expectObservable(output$).toBe('-a', {
-            a: pollTask('4413')
+        expectObservable(output$).toBe('-(ab)', {
+            a: submittedTask(),
+            b: pollTask('4413')
         });
     });
 });

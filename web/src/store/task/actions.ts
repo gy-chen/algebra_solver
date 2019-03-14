@@ -1,12 +1,14 @@
 import { History } from 'history';
 import {
     SUBMIT_TASK,
+    SUBMITTED_TASK,
     POLL_TASK,
     UPDATE_TASK,
     SubmitTaskAction,
     PollTaskAction,
     UpdateTaskAction,
-    Task
+    Task,
+    SubmittedTaskAction
 } from './types';
 
 export const submitTask = (content: string, history: History): SubmitTaskAction => {
@@ -18,6 +20,12 @@ export const submitTask = (content: string, history: History): SubmitTaskAction 
         }
     };
 };
+
+export const submittedTask = (): SubmittedTaskAction => {
+    return {
+        type: SUBMITTED_TASK
+    };
+}
 
 export const pollTask = (id: string): PollTaskAction => {
     return {
