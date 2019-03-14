@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import EquationInput from '../../components/EquationInput';
+import EquationInput from '../../containers/EquationInput';
 import EquationResult from '../../components/EquationResult';
 
 /**
@@ -13,8 +13,8 @@ class App extends Component {
     render() {
         return (
             <Switch>
-                <Route component={EquationInput} />
-                <Route component={EquationResult} />
+                <Route path="/task" component={EquationResult} />
+                <Route path="/" component={EquationInput} />
             </Switch>
         );
     }
