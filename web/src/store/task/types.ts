@@ -4,11 +4,18 @@ import * as apiTask from '../../api/task';
 export const SUBMIT_TASK = 'SUBMIT_TASK';
 export const SUBMITTED_TASK = 'SUBMITTED_TASK';
 export const POLL_TASK = 'POLL_TASK';
+export const POLLED_TASK = 'POLLED_TASK';
 export const UPDATE_TASK = 'UPDATE_TASK';
 
-export interface TaskState {
-    submitting: boolean,
+export interface TaskRootState {
+    state: TaskState,
     currentTask: Task | null
+};
+
+export enum TaskState {
+    INITIAL,
+    SUBMITTING,
+    POLLING
 };
 
 export interface SubmitTaskAction {
@@ -29,6 +36,10 @@ export interface PollTaskAction {
         id: string
     }
 };
+
+export interface PolledTaskAction {
+    type: typeof POLLED_TASK
+}
 
 export interface UpdateTaskAction {
     type: typeof UPDATE_TASK,

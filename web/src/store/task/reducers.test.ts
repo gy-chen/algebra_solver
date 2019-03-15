@@ -1,11 +1,11 @@
 import { createMemoryHistory } from 'history';
 import { taskReducer } from './reducers';
-import { TaskState, Task } from './types';
-import { submitTask, submittedTask, updateTask } from './actions';
+import { TaskRootState, Task, TaskState } from './types';
+import { submitTask, submittedTask, updateTask, pollTask, polledTask } from './actions';
 
 it('updateTask', () => {
-    const initialState: TaskState = {
-        submitting: false,
+    const initialState: TaskRootState = {
+        state: TaskState.INITIAL,
         currentTask: {
             id: '4413',
             content: 'x - 1 = 0',
@@ -33,8 +33,9 @@ it('updateTask', () => {
 });
 
 it('submitTask', () => {
-    const initialState: TaskState = {
-        submitting: false,
+
+    const initialState: TaskRootState = {
+        state: TaskState.INITIAL,
         currentTask: null
     };
 
@@ -42,16 +43,39 @@ it('submitTask', () => {
 
     const stateAfterUpdate = taskReducer(initialState, submitTask('x - 1 = 0', mockHistory));
 
-    expect(stateAfterUpdate.submitting).toEqual(true);
+    expect(stateAfterUpdate.state).toEqual(TaskState.SUBMITTING);
+
 });
 
 it('submittedTask', () => {
-    const initialState: TaskState = {
-        submitting: true,
+    const initialState: TaskRootState = {
+        state: TaskState.SUBMITTING,
         currentTask: null
     };
 
     const stateAfterUpdate = taskReducer(initialState, submittedTask());
 
-    expect(stateAfterUpdate.submitting).toEqual(false);
+    expect(stateAfterUpdate.state).toEqual(TaskState.INITIAL);
+});
+
+it('pollTask', () => {
+    const initialState: TaskRootState = {
+        state: TaskState.INITIAL,
+        currentTask: null
+    };
+
+    const stateAfterUpdate = taskReducer(initialState, pollTask('4413'));
+
+    expect(stateAfterUpdate.state).toEqual(TaskState.POLLING);
+});
+
+it('polledTask', () => {
+    const initialState: TaskRootState = {
+        state: TaskState.POLLING,
+        currentTask: null
+    };
+
+    const stateAfterUpdate = taskReducer(initialState, polledTask());
+
+    expect(stateAfterUpdate.state).toEqual(TaskState.INITIAL);
 });

@@ -1,8 +1,8 @@
 import { ofType, ActionsObservable, StateObservable, combineEpics } from 'redux-observable';
 import { Observable, Observer } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
-import { pollTask, updateTask, submittedTask } from './actions';
-import { PollTaskAction, SubmitTaskAction, SubmittedTaskAction, SUBMIT_TASK, POLL_TASK, UpdateTaskAction, TaskEpicDependencies, Task } from './types';
+import { pollTask, updateTask, submittedTask, polledTask } from './actions';
+import { PollTaskAction, SubmitTaskAction, SubmittedTaskAction, SUBMIT_TASK, POLL_TASK, UpdateTaskAction, TaskEpicDependencies, Task, PolledTaskAction } from './types';
 import { RootState } from '../types';
 
 type SubmitTaskEpicActions = PollTaskAction | SubmittedTaskAction;
@@ -27,12 +27,24 @@ export const submitTaskEpic = (action$: ActionsObservable<SubmitTaskAction>, sta
     })
 );
 
-export const pollTaskEpic = (action$: ActionsObservable<PollTaskAction>, state$: StateObservable<RootState>, { taskApi }: TaskEpicDependencies) => action$.pipe(
+type PollTaskEpicActions = UpdateTaskAction | PolledTaskAction;
+
+export const pollTaskEpic = (action$: ActionsObservable<PollTaskAction>, state$: StateObservable<RootState> | null, { taskApi }: TaskEpicDependencies) => action$.pipe(
     ofType(POLL_TASK),
-    switchMap((action): Observable<UpdateTaskAction> => {
-        return taskApi.pollTask(action.payload.id).pipe(
-            map((task: Task) => updateTask(task))
-        );
+    switchMap((action): Observable<PollTaskEpicActions> => {
+        return Observable.create((observer: Observer<PollTaskEpicActions>) => {
+            taskApi
+                .pollTask(action.payload.id)
+                .subscribe(
+                    task => {
+                        observer.next(updateTask(task));
+                    },
+                    undefined,
+                    () => {
+                        observer.next(polledTask());
+                        observer.complete();
+                    });
+        });
     })
 );
 

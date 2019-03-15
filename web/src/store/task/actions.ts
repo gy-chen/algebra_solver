@@ -3,12 +3,14 @@ import {
     SUBMIT_TASK,
     SUBMITTED_TASK,
     POLL_TASK,
+    POLLED_TASK,
     UPDATE_TASK,
     SubmitTaskAction,
     PollTaskAction,
     UpdateTaskAction,
     Task,
-    SubmittedTaskAction
+    SubmittedTaskAction,
+    PolledTaskAction
 } from './types';
 
 export const submitTask = (content: string, history: History): SubmitTaskAction => {
@@ -35,6 +37,12 @@ export const pollTask = (id: string): PollTaskAction => {
         }
     };
 };
+
+export const polledTask = (): PolledTaskAction => {
+    return {
+        type: POLLED_TASK
+    };
+}
 
 export const updateTask = (task: Task): UpdateTaskAction => {
     return {
