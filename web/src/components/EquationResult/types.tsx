@@ -1,5 +1,5 @@
 import { Task } from '../../store/task/types';
 
 export interface EquationResultProps {
-    task?: Task
+    task?: Task | null
 }
