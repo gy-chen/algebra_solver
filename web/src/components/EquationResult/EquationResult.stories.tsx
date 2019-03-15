@@ -1,6 +1,5 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import styled from 'styled-components';
 import EquationResult from '.'
 
 storiesOf('EquationResult', module)
@@ -17,13 +16,5 @@ storiesOf('EquationResult', module)
             }
         };
 
-        const Container = styled.div`
-            width: 250px;
-        `;
-
-        return (
-            <Container>
-                 <EquationResult task={task} />
-            </Container>
-        );
+        return <EquationResult task={task} />;
     });

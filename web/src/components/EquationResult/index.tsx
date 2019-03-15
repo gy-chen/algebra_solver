@@ -6,6 +6,7 @@ import { EquationResultProps } from './types';
 const Container = styled.div``;
 
 const RowContainer = styled.div`
+    min-width: 300px;
     display: flex;
     align-items: baseline;
     border-bottom: solid 1px;
