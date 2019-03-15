@@ -7,6 +7,7 @@ import { submitTask } from '../../store/task/actions';
 import EquationInput from '../../components/EquationInput';
 import { RootState } from '../../store/types';
 import { EquationInputState } from '../../components/EquationInput/types';
+import { TaskState } from '../../store/task/types';
 
 interface EquationInputContainerProps {
     dispatch: Dispatch,
@@ -16,7 +17,7 @@ interface EquationInputContainerProps {
 
 const mapStateToProps = (state: RootState) => {
     return {
-        state: state.task.submitting ? EquationInputState.SUBMITTING : EquationInputState.NORMAL
+        state: state.task.state === TaskState.SUBMITTING ? EquationInputState.SUBMITTING : EquationInputState.NORMAL
     };
 };
 

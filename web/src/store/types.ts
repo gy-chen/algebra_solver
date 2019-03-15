@@ -1,5 +1,5 @@
-import { TaskState } from './task/types';
+import { TaskRootState } from './task/types';
 
 export interface RootState {
-    task: TaskState
+    task: TaskRootState
 };
