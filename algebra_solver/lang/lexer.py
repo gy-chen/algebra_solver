@@ -63,7 +63,7 @@ def tokenize(text):
         elif c.isnumeric():
             token, gen = _read_number(c, p, gen)
             yield token
-        elif c.isalpha():
+        elif c in string.ascii_letters:
             token, gen = _read_identifier(c, p, gen)
             yield token
         else:

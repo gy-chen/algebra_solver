@@ -57,3 +57,7 @@ def test_unknown_tokens():
     strange_number = "23.4.5"
     with pytest.raises(lexer.UnknownTokenError):
         list(lexer.tokenize(strange_number))
+
+    chinese = '中文'
+    with pytest.raises(lexer.UnknownTokenError):
+        list(lexer.tokenize(chinese))
