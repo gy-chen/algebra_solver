@@ -56,13 +56,32 @@ def test_task_api_create_task(client):
 
 def test_task_api_create_task_malform_request(client):
     res = client.post('/task/')
+    error = json.loads(res.data.decode())['error']
     assert res.status_code == 400
+    assert error['type'] == 'EMPTY'
+    assert error['position'] is None
+    assert error['token'] is None
+
+    res = client.post('/task/', data={'content': ''})
+    error = json.loads(res.data.decode())['error']
+    assert res.status_code == 400
+    assert error['type'] == 'UNEXPECTED_END'
+    assert error['position'] is None
+    assert error['token'] is None
 
     res = client.post('/task/', data={'content': 'x - 1'})
+    error = json.loads(res.data.decode())['error']
     assert res.status_code == 400
+    assert error['type'] == 'UNEXPECTED_END'
+    assert error['position'] is None
+    assert error['token'] is None
 
-    res = client.post('/task/', data={'content': '中文'})
+    res = client.post('/task/', data={'content': '10 - 中文 = 0'})
+    error = json.loads(res.data.decode())['error']
     assert res.status_code == 400
+    assert error['type'] == 'UNKNOWN_TOKEN'
+    assert error['position'] == 5
+    assert error['token'] is None
 
 
 def test_task_api_get_task(client):

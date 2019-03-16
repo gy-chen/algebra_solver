@@ -7,15 +7,28 @@ Provides:
 
 """
 import asyncio
+import collections
+import enum
 import json
+from functools import singledispatch
 from flask import Blueprint, jsonify, request, abort
 from algebra_solver.web.extension import task_storage
 from algebra_solver.web.extension import background_task
 from algebra_solver.web.extension.storage import TaskState
-from algebra_solver.lang.parser import ParseException
+from algebra_solver.lang.parser import ParseException, UnexpectEndException, UnexpectTokenException
 from algebra_solver.lang.lexer import UnknownTokenError
 
 task = Blueprint('task', __name__)
+
+TaskContentError = collections.namedtuple(
+    'TaskContentError', 'type token position')
+
+
+class TaskContentErrorType(enum.Enum):
+    UNKNOWN_TOKEN = 'UNKNOWN_TOKEN'
+    UNEXPECTED_END = 'UNEXPECTED_END'
+    UNEXPECTED_TOKEN = 'UNEXPECTED_TOKEN'
+    EMPTY = 'EMPTY'
 
 
 @task.route('/<id_>')
@@ -30,7 +43,6 @@ def get_task(id_):
         }
     else:
         task_dict = None
-    # TODO add status
     return jsonify(task=task_dict)
 
 
@@ -39,13 +51,15 @@ def create_task():
     try:
         content = request.form['content']
     except KeyError:
-        abort(400)
+        task_content_error = TaskContentError(
+            type=TaskContentErrorType.EMPTY.value, token=None, position=None)
+        return jsonify(error=task_content_error._asdict()), 400
     storage = task_storage.storage
     try:
         task = storage.new_task(content)
-    except (ParseException, UnknownTokenError):
-        # TODO add error message and status
-        abort(400)
+    except (ParseException, UnknownTokenError) as e:
+        task_content_error = _get_task_content_error(e)
+        return jsonify(error=task_content_error._asdict()), 400
     storage.put_task(task)
     background_task.solve_task(task.id_)
     task_dict = {
@@ -54,8 +68,27 @@ def create_task():
         'content': task.content,
         'result': task.result
     }
-    # TODO add status
     return jsonify(task=task_dict)
+
+
+@singledispatch
+def _get_task_content_error(e):
+    raise TypeError()
+
+
+@_get_task_content_error.register(UnexpectEndException)
+def _(e):
+    return TaskContentError(type=TaskContentErrorType.UNEXPECTED_END.value, token=None, position=None)
+
+
+@_get_task_content_error.register(UnexpectTokenException)
+def _(e):
+    return TaskContentError(type=TaskContentErrorType.UNEXPECTED_TOKEN.value, token=e.token.value, position=None)
+
+
+@_get_task_content_error.register(UnknownTokenError)
+def _(e):
+    return TaskContentError(type=TaskContentErrorType.UNKNOWN_TOKEN.value, position=e.position, token=None)
 
 
 @task.route('/polling/<id_>')
