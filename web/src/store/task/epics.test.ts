@@ -3,53 +3,154 @@ import { TestScheduler } from 'rxjs/testing';
 import { createMemoryHistory } from 'history';
 import { submitTaskEpic, pollTaskEpic } from './epics';
 import * as taskApi from '../../api/task';
-import { submitTask, pollTask, submittedTask, updateTask, polledTask } from './actions';
+import { submitTask, pollTask, submitTaskError, submittedTask, updateTask, polledTask } from './actions';
+import { TaskContentErrorType } from './types';
 
 it('submitTaskEpic', (done) => {
-    const mockHistory = createMemoryHistory();
 
-    const testScheduler = new TestScheduler((actual, expected) => {
-        // XXX setTimeout so the epic output can be collected, maybe has a better way
-        setTimeout(() => {
-            expect(actual).toEqual(expected);
-            expect(mockHistory.location.pathname).toEqual('/task/4413');
-            done();
-        }, 10);
+    describe('submit success', () => {
+        const mockHistory = createMemoryHistory();
+
+        const testScheduler = new TestScheduler((actual, expected) => {
+            // XXX setTimeout so the epic output can be collected, maybe has a better way
+            setTimeout(() => {
+                expect(actual).toEqual(expected);
+                expect(mockHistory.location.pathname).toEqual('/task/4413');
+                done();
+            }, 10);
+        });
+
+        testScheduler.run(({ hot, expectObservable }) => {
+
+            const mockTaskApi: typeof taskApi = {
+                createTask: jest.fn(() => Promise.resolve({
+                    data: {
+                        task: {
+                            id: '4413'
+                        }
+                    },
+                    status: 200,
+                    statusText: 'OK',
+                    headers: null,
+                    config: {}
+                })),
+                pollTask: jest.fn()
+            };
+
+            const source = hot('-a', {
+                a: submitTask('x - 1 = 0', mockHistory)
+            });
+            const action$ = ActionsObservable.from(source);
+
+            const state$ = null;
+
+            const dependencies = {
+                taskApi: mockTaskApi
+            };
+
+            const output$ = submitTaskEpic(action$, state$, dependencies);
+
+            expectObservable(output$).toBe('-(ab)', {
+                a: submittedTask(),
+                b: pollTask('4413')
+            });
+        });
     });
 
-    testScheduler.run(({ hot, expectObservable }) => {
+    describe('submit content error', () => {
 
-        const mockTaskApi: typeof taskApi = {
-            createTask: jest.fn(() => Promise.resolve({
-                data: {
-                    task: {
-                        id: '4413'
-                    }
-                },
-                status: 200,
-                statusText: 'OK',
-                headers: null,
-                config: {}
-            })),
-            pollTask: jest.fn()
-        };
-
-        const source = hot('-a', {
-            a: submitTask('x - 1 = 0', mockHistory)
+        const testScheduler = new TestScheduler((actual, expected) => {
+            // XXX setTimeout so the epic output can be collected, maybe has a better way
+            setTimeout(() => {
+                expect(actual).toEqual(expected);
+                done();
+            }, 10);
         });
-        const action$ = ActionsObservable.from(source);
 
-        const state$ = null;
+        testScheduler.run(({ hot, expectObservable }) => {
 
-        const dependencies = {
-            taskApi: mockTaskApi
-        };
+            const mockHistory = createMemoryHistory();
 
-        const output$ = submitTaskEpic(action$, state$, dependencies);
+            const mockSubmitError = {
+                type: TaskContentErrorType.UNEXPECTED_END,
+                position: 0,
+                token: null
+            };
 
-        expectObservable(output$).toBe('-(ab)', {
-            a: submittedTask(),
-            b: pollTask('4413')
+            const mockTaskApi: typeof taskApi = {
+                createTask: jest.fn(() => Promise.reject({
+                    response: {
+                        data: {
+                            error: mockSubmitError
+                        },
+                        status: 400,
+                        statusText: 'Bad Request',
+                        headers: null,
+                        config: {}
+                    }
+                })),
+                pollTask: jest.fn()
+            };
+
+            const source = hot('-a', {
+                a: submitTask('', mockHistory)
+            });
+            const action$ = ActionsObservable.from(source);
+
+            const state$ = null;
+
+            const dependencies = {
+                taskApi: mockTaskApi
+            };
+
+            const output$ = submitTaskEpic(action$, state$, dependencies);
+
+            expectObservable(output$).toBe('-a', {
+                a: submitTaskError(mockSubmitError),
+            });
+        });
+    });
+
+    describe('submit other error', () => {
+
+        const testScheduler = new TestScheduler((actual, expected) => {
+            // XXX setTimeout so the epic output can be collected, maybe has a better way
+            setTimeout(() => {
+                expect(actual).toEqual(expected);
+                done();
+            }, 10);
+        });
+
+        testScheduler.run(({ hot, expectObservable }) => {
+
+            const mockHistory = createMemoryHistory();
+
+            const mockTaskApi: typeof taskApi = {
+                createTask: jest.fn(() => Promise.reject({
+                })),
+                pollTask: jest.fn()
+            };
+
+            const source = hot('-a', {
+                a: submitTask('', mockHistory)
+            });
+            const action$ = ActionsObservable.from(source);
+
+            const state$ = null;
+
+            const dependencies = {
+                taskApi: mockTaskApi
+            };
+
+            const output$ = submitTaskEpic(action$, state$, dependencies);
+
+            expectObservable(output$).toBe('-a', {
+                a: submitTaskError({
+                    type: TaskContentErrorType.OTHER,
+                    position: null,
+                    token: null
+                }),
+            });
         });
     });
 });

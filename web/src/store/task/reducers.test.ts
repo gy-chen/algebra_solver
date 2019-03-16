@@ -1,10 +1,11 @@
 import { createMemoryHistory } from 'history';
 import { taskReducer } from './reducers';
-import { TaskRootState, Task, TaskState } from './types';
-import { submitTask, submittedTask, updateTask, pollTask, polledTask } from './actions';
+import { TaskRootState, Task, TaskState, TaskContentErrorType, TaskContentError } from './types';
+import { submitTask, submittedTask, updateTask, pollTask, polledTask, submitTaskError } from './actions';
 
 it('updateTask', () => {
     const initialState: TaskRootState = {
+        error: null,
         state: TaskState.INITIAL,
         currentTask: {
             id: '4413',
@@ -34,21 +35,62 @@ it('updateTask', () => {
 
 it('submitTask', () => {
 
+    describe('from inital state', () => {
+        const initialState: TaskRootState = {
+            error: null,
+            state: TaskState.INITIAL,
+            currentTask: null
+        };
+
+        const mockHistory = createMemoryHistory();
+
+        const stateAfterUpdate = taskReducer(initialState, submitTask('x - 1 = 0', mockHistory));
+
+        expect(stateAfterUpdate.state).toEqual(TaskState.SUBMITTING);
+    });
+
+    describe('from error state', () => {
+        const initialState: TaskRootState = {
+            error: {
+                type: TaskContentErrorType.UNEXPECTED_END,
+                position: 0,
+                token: null
+            },
+            state: TaskState.SUBMIT_ERROR,
+            currentTask: null
+        };
+
+        const mockHistory = createMemoryHistory();
+
+        const stateAfterUpdate = taskReducer(initialState, submitTask('x - 1 = 0', mockHistory));
+
+        expect(stateAfterUpdate.state).toEqual(TaskState.SUBMITTING);
+        expect(stateAfterUpdate.error).toBeNull();
+    });
+});
+
+it('submitTaskError', () => {
     const initialState: TaskRootState = {
-        state: TaskState.INITIAL,
+        error: null,
+        state: TaskState.SUBMITTING,
         currentTask: null
     };
 
-    const mockHistory = createMemoryHistory();
+    const taskContentError: TaskContentError = {
+        type: TaskContentErrorType.UNEXPECTED_END,
+        position: 0,
+        token: null
+    };
 
-    const stateAfterUpdate = taskReducer(initialState, submitTask('x - 1 = 0', mockHistory));
+    const stateAfterUpdate = taskReducer(initialState, submitTaskError(taskContentError));
 
-    expect(stateAfterUpdate.state).toEqual(TaskState.SUBMITTING);
-
+    expect(stateAfterUpdate.state).toEqual(TaskState.SUBMIT_ERROR);
+    expect(stateAfterUpdate.error).toEqual(taskContentError);
 });
 
 it('submittedTask', () => {
     const initialState: TaskRootState = {
+        error: null,
         state: TaskState.SUBMITTING,
         currentTask: null
     };
@@ -60,6 +102,7 @@ it('submittedTask', () => {
 
 it('pollTask', () => {
     const initialState: TaskRootState = {
+        error: null,
         state: TaskState.INITIAL,
         currentTask: null
     };
@@ -71,6 +114,7 @@ it('pollTask', () => {
 
 it('polledTask', () => {
     const initialState: TaskRootState = {
+        error: null,
         state: TaskState.POLLING,
         currentTask: null
     };

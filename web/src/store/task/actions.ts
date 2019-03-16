@@ -1,16 +1,19 @@
 import { History } from 'history';
 import {
     SUBMIT_TASK,
+    SUBMIT_TASK_ERROR,
     SUBMITTED_TASK,
     POLL_TASK,
     POLLED_TASK,
     UPDATE_TASK,
     SubmitTaskAction,
+    SubmitTaskErrorAction,
     PollTaskAction,
     UpdateTaskAction,
     Task,
     SubmittedTaskAction,
-    PolledTaskAction
+    PolledTaskAction,
+    TaskContentError
 } from './types';
 
 export const submitTask = (content: string, history: History): SubmitTaskAction => {
@@ -22,6 +25,13 @@ export const submitTask = (content: string, history: History): SubmitTaskAction 
         }
     };
 };
+
+export const submitTaskError = (error: TaskContentError): SubmitTaskErrorAction => {
+    return {
+        type: SUBMIT_TASK_ERROR,
+        payload: error
+    };
+}
 
 export const submittedTask = (): SubmittedTaskAction => {
     return {
