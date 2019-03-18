@@ -6,6 +6,7 @@ import { EquationInputProps, EquationInputState } from './types';
 const InputContainer = styled.div``;
 
 const Input = styled.input`
+    width: 100%;
     font-family: monospace;
     font-size: 1em;
     padding: 0.5em 1em;

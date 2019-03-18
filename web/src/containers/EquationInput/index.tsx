@@ -25,6 +25,10 @@ const mapStateToProps = (state: RootState) => {
     };
 };
 
+const Container = styled.div`
+    width: 40ch;
+`;
+
 const EquationInputErrorContainer = styled.div`
     padding-left: 15px;
 `;
@@ -37,13 +41,13 @@ const EuqationInputContainer = ({ history, dispatch, error, ...props }: Equation
     }
 
     return (
-        <div>
+        <Container>
             <EquationInput
                 {...props}
                 onSubmit={onSubmit}
             />
             {renderEquationInputError(error)}
-        </div>
+        </Container>
     );
 }
 
