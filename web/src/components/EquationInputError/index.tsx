@@ -18,6 +18,7 @@ interface PositionErrorProps {
 const PositionError = styled.div`
     :before {
         font-family: monospace;
+        color: red;
         content: '>';
         display: inline-block;
         transform: rotate(-90deg) translateY(${(p: PositionErrorProps) => p.position}ch);
