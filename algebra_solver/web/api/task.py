@@ -83,7 +83,7 @@ def _(e):
 
 @_get_task_content_error.register(UnexpectTokenException)
 def _(e):
-    return TaskContentError(type=TaskContentErrorType.UNEXPECTED_TOKEN.value, token=e.token.value, position=None)
+    return TaskContentError(type=TaskContentErrorType.UNEXPECTED_TOKEN.value, token=e.token.value, position=e.token.position)
 
 
 @_get_task_content_error.register(UnknownTokenError)

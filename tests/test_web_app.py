@@ -76,6 +76,13 @@ def test_task_api_create_task_malform_request(client):
     assert error['position'] is None
     assert error['token'] is None
 
+    res = client.post('/task/', data={'content': 'x ** 1 = 0'})
+    error = json.loads(res.data.decode())['error']
+    assert res.status_code == 400
+    assert error['type'] == 'UNEXPECTED_TOKEN'
+    assert error['position'] == 3
+    assert error['token'] == '*'
+
     res = client.post('/task/', data={'content': '10 - 中文 = 0'})
     error = json.loads(res.data.decode())['error']
     assert res.status_code == 400
