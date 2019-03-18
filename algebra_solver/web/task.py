@@ -19,6 +19,10 @@ def solve_task(id_):
     task.state = TaskState.SOLVING
     task_storage.storage.put_task(task)
     expression = parse(tokenize(task.content))
-    task.result = eval_(expression)
-    task.state = TaskState.DONE
-    task_storage.storage.put_task(task)
+    try:
+        task.result = eval_(expression)
+        task.state = TaskState.DONE
+        task_storage.storage.put_task(task)
+    except:
+        task.state = TaskState.ERROR
+        task_storage.storage.put_task(task)
