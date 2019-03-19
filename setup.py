@@ -20,6 +20,7 @@ REQUIRES = [
     'gevent-websocket',
     'python-dotenv',
     'flask-cors',
+    'gunicorn',
     # TODO this is testing related package, find a place to put testing packages
     'websockets'
 ]
