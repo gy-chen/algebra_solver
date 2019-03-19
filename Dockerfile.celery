@@ -1,0 +1,3 @@
+FROM algebra_solver
+
+CMD celery -A algebra_solver.app.celery:app worker
