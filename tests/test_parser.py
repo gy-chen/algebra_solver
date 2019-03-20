@@ -16,6 +16,18 @@ def test_simple_parse():
 
     assert equation_expression.right == parser.NumberExpression(10)
 
+    tokens = lexer.tokenize('10 = x + 3')
+    equation_expression = parser.parse(tokens)
+    assert isinstance(equation_expression, parser.EquationExpression)
+    assert isinstance(equation_expression.right, parser.InfixExpression)
+    assert isinstance(equation_expression.left, parser.NumberExpression)
+
+    assert equation_expression.right.operator == parser.OperatorType.PLUS
+    assert equation_expression.right.left == parser.IdentifierExpression('x')
+    assert equation_expression.right.right == parser.NumberExpression(3)
+
+    assert equation_expression.left == parser.NumberExpression(10)
+
 
 def test_parse_expression():
     plus_expression = parser.parse(lexer.tokenize('1+1=1'))

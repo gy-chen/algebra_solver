@@ -77,7 +77,7 @@ PRECEDENCE = {
 
 
 def parse(tokens_gen):
-    equation_expression = _parse_equation_expression(tokens_gen)
+    equation_expression, tokens_gen = _parse_equation_expression(tokens_gen)
     try:
         token = next(tokens_gen)
         raise UnexpectTokenException(token)
@@ -95,7 +95,7 @@ def _parse_equation_expression(tokens_gen):
     except StopIteration:
         raise UnexpectEndException()
     right, tokens_gen = _parse_expression(tokens_gen)
-    return EquationExpression(left, right)
+    return EquationExpression(left, right), tokens_gen
 
 
 def _parse_expression(tokens_gen, precedence=PRECEDENCE[OperatorType.LOWEST]):
@@ -111,15 +111,16 @@ def _parse_expression(tokens_gen, precedence=PRECEDENCE[OperatorType.LOWEST]):
 
     while precedence < PRECEDENCE[operator]:
         right, tokens_gen = _parse_expression(tokens_gen, PRECEDENCE[operator])
+        left = InfixExpression(operator, left, right)
         try:
             token = next(tokens_gen)
         except StopIteration:
             return left, tokens_gen
-        left = InfixExpression(operator, left, right)
         operator = TOKEN_TYPE_TO_OPERATOR_TYPE.get(token.type, None)
         if operator is None:
             tokens_gen = chain([token], tokens_gen)
             return left, tokens_gen
+
     tokens_gen = chain([token], tokens_gen)
     return left, tokens_gen
 
