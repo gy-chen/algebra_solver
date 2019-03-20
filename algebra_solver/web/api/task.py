@@ -113,7 +113,7 @@ def polling_task(id_):
         # TODO read timeout setting
         task_coroute = asyncio.wait_for(task_coroute, 5)
         try:
-            task = asyncio.get_event_loop().run_until_complete(task_coroute)
+            task = asyncio.run(task_coroute)
         except asyncio.TimeoutError:
             task = task_storage.storage.get_task(id_)
         if task:

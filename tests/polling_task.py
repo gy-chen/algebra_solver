@@ -21,7 +21,7 @@ WS_BASE_PATH = 'ws://127.0.0.1:5000'
 def main():
     task = _create_task()
     test_polling_coroute = _test_polling(task)
-    asyncio.get_event_loop().run_until_complete(test_polling_coroute)
+    asyncio.run(test_polling_coroute)
 
 
 def _create_task():
