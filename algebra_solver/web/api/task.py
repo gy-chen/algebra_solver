@@ -115,7 +115,7 @@ def polling_task(id_):
         try:
             task = asyncio.run(task_coroute)
         except asyncio.TimeoutError:
-            task = task_storage.storage.get_task(id_)
+            continue
         if task:
             _send_task(ws, task)
     return ('', 204)
