@@ -17,4 +17,17 @@ storiesOf('EquationResult', module)
         };
 
         return <EquationResult task={task} />;
+    })
+    .add('wtih high loss task', () => {
+        const task = {
+            id: '4413',
+            state: 'DONE',
+            content: 'x - 4413 = 0',
+            result: {
+                x: 53,
+                _loss: 18000
+            }
+        };
+
+        return <EquationResult task={task} lossThreshold={0.2} />; 
     });

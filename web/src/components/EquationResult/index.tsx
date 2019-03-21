@@ -56,6 +56,47 @@ const RowContainer = styled.div`
     }
 `;
 
+interface ResultContainerProps {
+    hasLargeLoss: boolean
+};
+
+const ResultContainer = styled.div`
+    position: relative;
+
+    :before {
+        display: ${(p: ResultContainerProps) => p.hasLargeLoss ? 'unset' : 'none'};
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        background: rgba(255, 0, 0, .13);
+    }
+
+    :after {
+        display: ${(p: ResultContainerProps) => p.hasLargeLoss ? 'unset' : 'none'};
+        content: 'Cannot find the solution';
+        position: absolute;
+        left: 100%;
+        top: 0;
+        padding-left: 15px;
+        white-space: nowrap;
+        color: red;
+        font-weight: bold;
+    }
+
+    & > ${RowContainer}:first-child {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    & > ${RowContainer} > ${RowHead} {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+`;
+
 /**
  * EquationResult
  * 
@@ -67,7 +108,7 @@ const RowContainer = styled.div`
  *   - task: task object that retrived from backend.
  */
 const EquationResult = (props: EquationResultProps) => {
-    const { task } = props;
+    const { task, lossThreshold } = props;
     if (!task) {
         // TODO return segment
         return null;
@@ -78,12 +119,19 @@ const EquationResult = (props: EquationResultProps) => {
         .filter(v => !v.startsWith('_'))
         .map(k => renderVariableRow(k, task.result[k]));
 
+    let hasLargeLoss = false;
+    if (task.result._loss && lossThreshold) {
+        hasLargeLoss = task.result._loss > lossThreshold;
+    }
+
     return (
         <Container>
             {renderRow('State', task.state)}
             {renderRow('Equation', task.content)}
-            {renderRow('Result', null)}
-            {variableRows}
+            <ResultContainer hasLargeLoss={hasLargeLoss}>
+                {renderRow('Result', null)}
+                {variableRows}
+            </ResultContainer>
         </Container>
     );
 }
