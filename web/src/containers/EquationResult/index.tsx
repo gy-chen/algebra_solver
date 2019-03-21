@@ -4,7 +4,8 @@ import EquationResult from '../../components/EquationResult';
 
 const mapStateToProps = (state: RootState) => {
     return {
-        task: state.task.currentTask
+        task: state.task.currentTask,
+        lossThreshold: process.env.REACT_APP_LOSSTHRESHOLD ? Number.parseFloat(process.env.REACT_APP_LOSSTHRESHOLD) : null
     };
 };
 
