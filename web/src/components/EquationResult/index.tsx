@@ -97,6 +97,36 @@ const ResultContainer = styled.div`
     }
 `;
 
+const Loading = styled.div`
+    position: relative;
+    min-width: 300px;
+    min-height: 200px;
+    border-radius: .7em;
+    background-color: rgba(0, 0, 0, .05);
+    overflow: hidden;
+
+    :before {
+        content: '';
+        animation: slide 1.25s ease-out backwards infinite;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right,
+            transparent, rgba(0, 0, 0, .07) 40%, rgba(0, 0, 0, .09) 50%, rgba(0, 0, 0, .07) 60%, transparent 100%);
+        transform: translateX(-100%);
+    }
+
+    @keyframes slide {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+    }
+`;
+
 /**
  * EquationResult
  * 
@@ -110,8 +140,7 @@ const ResultContainer = styled.div`
 const EquationResult = (props: EquationResultProps) => {
     const { task, lossThreshold } = props;
     if (!task) {
-        // TODO return segment
-        return null;
+        return <Loading />;
     }
 
     let variableRows = _
