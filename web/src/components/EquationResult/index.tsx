@@ -3,7 +3,19 @@ import React from 'react';
 import styled from 'styled-components';
 import { EquationResultProps } from './types';
 
-const Container = styled.div``;
+const Container = styled.div`
+    animation: pop-up .5s cubic-bezier(0, .98, .49, 1.19) forwards;
+
+    @keyframes pop-up {
+        0% {
+            transform: scale(.8);
+        }
+
+        100% {
+            transform: none;
+        }
+    }
+`;
 
 const RowHead = styled.div`
     text-transform: uppercase;
