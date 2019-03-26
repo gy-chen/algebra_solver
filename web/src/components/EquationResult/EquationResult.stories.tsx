@@ -8,10 +8,10 @@ storiesOf('EquationResult', module)
         const task = {
             id: '4413',
             state: 'DONE',
-            content: 'x + y = 0',
+            content: 'x + y = 1',
             result: {
-                x: 0,
-                y: 0,
+                x: 0.79281,
+                y: 0.20719,
                 _loss: 0
             }
         };

@@ -181,7 +181,7 @@ const renderVariableRow = (variable: string, result: number | null | undefined) 
     return (
         <RowContainer key={variable}>
             <VariableRowHead>{variable}</VariableRowHead>
-            <RowContent>{result}</RowContent>
+            <RowContent>{typeof result === 'number' ? result.toPrecision(2) : result}</RowContent>
         </RowContainer>
     );
 }
