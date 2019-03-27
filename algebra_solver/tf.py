@@ -12,7 +12,7 @@ class UnexpectOperatorTypeException(Exception):
     pass
 
 
-def eval(equation_expression, steps=50000):
+def eval(equation_expression, steps=50000, learning_rate=.5):
     """solve given equation
 
     :return dict: contain key as algebra variables, and value as result of the variable.
@@ -24,7 +24,7 @@ def eval(equation_expression, steps=50000):
         right = _eval(equation_expression.right, context)
         loss = ((right - left) ** 2) / 2
 
-        optimizer = tf.train.AdamOptimizer()
+        optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         train = optimizer.minimize(loss)
 
     result = {}
@@ -34,6 +34,8 @@ def eval(equation_expression, steps=50000):
 
         for _ in range(steps):
             sess.run(train)
+            if sess.run(loss) == 0:
+                break
 
         for var in context:
             result[var] = sess.run(context[var])

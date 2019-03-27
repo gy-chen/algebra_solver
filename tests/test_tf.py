@@ -22,3 +22,17 @@ def test_eval_two_variables():
 
     assert result['_loss'] == pytest.approx(0, abs=1e-3)
     assert result['x'] / result['y'] == pytest.approx(100, abs=1e-3)
+
+def test_small_eval():
+    exp = parser.parse(lexer.tokenize('x = 0.001'))
+    result = tf.eval(exp)
+
+    assert result['_loss'] == pytest.approx(0, abs=1e-3)
+    assert result['x'] == pytest.approx(0.001)
+
+def test_large_eval():
+    exp = parser.parse(lexer.tokenize('x * x = 4413'))
+    result = tf.eval(exp)
+
+    assert result['_loss'] == pytest.approx(0, abs=1e-3)
+    assert abs(result['x']) == pytest.approx(66.43, abs=1e-3)
