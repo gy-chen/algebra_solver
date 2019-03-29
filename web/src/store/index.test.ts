@@ -1,5 +1,5 @@
-import { configureStore } from '.';
+import { configureStore } from ".";
 
-it('configure store without crashing', () => {
-    configureStore();
+it("configure store without crashing", () => {
+  configureStore();
 });
